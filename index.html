@@ -1,8 +1,45 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>優乃翼｜レース鳩データベース</title><link rel="stylesheet" href="styles.css"></head><body>
-<header><div class="wrap head"><a href="index.html"><b>優乃翼</b><small>レース鳩データベース</small></a><nav><a href="admin.html">管理者</a><a href="#contact">お問い合わせ</a></nav></div></header>
+<header class="site-header">
+  <div class="wrap head">
+    <a class="brand-link" href="index.html" aria-label="優乃翼トップ">
+      <div class="brand-main">優乃翼</div>
+      <div class="brand-sub">レース鳩データベース</div>
+    </a>
+
+    <div class="desktop-actions">
+      <a class="header-btn secondary" href="admin.html">管理者ログイン</a>
+      <a class="header-btn primary" href="#contact">お問い合わせ</a>
+    </div>
+
+    <button id="menuToggle" class="menu-toggle" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
+  </div>
+
+  <nav id="mobileMenu" class="mobile-menu">
+    <a href="#search">鳩を検索</a>
+    <a href="#contact">お問い合わせ</a>
+    <a href="admin.html">管理者ログイン</a>
+  </nav>
+</header>
 <main><section class="hero"><div class="wrap"><p>YUNO TSUBASA RACING PIGEON</p><h1>レース鳩を検索・閲覧できます</h1><span>脚環番号、血統、競翔成績などから、優乃翼の登録鳩をご覧いただけます。</span></div></section>
-<section class="wrap search"><input id="keyword" placeholder="脚環番号・個体名・血統など"><div class="filters"><select id="sexFilter"><option value="">性別：すべて</option><option>♂</option><option>♀</option><option>不明</option></select><select id="statusFilter"><option value="">状態：すべて</option><option>販売中</option><option>商談中</option><option>売約済</option><option>非売品</option></select><select id="yearFilter"><option value="">作出年：すべて</option></select></div><div class="meta"><span id="resultCount">読み込み中…</span><button id="resetButton">条件をクリア</button></div></section>
+<section id="search" class="wrap search"><input id="keyword" placeholder="脚環番号・個体名・血統など"><div class="filters"><select id="sexFilter"><option value="">性別：すべて</option><option>♂</option><option>♀</option><option>不明</option></select><select id="statusFilter"><option value="">状態：すべて</option><option>販売中</option><option>商談中</option><option>売約済</option><option>非売品</option></select><select id="yearFilter"><option value="">作出年：すべて</option></select></div><div class="meta"><span id="resultCount">読み込み中…</span><button id="resetButton">条件をクリア</button></div></section>
 <section class="wrap"><div id="loading">データを読み込んでいます…</div><div id="error" hidden>データを読み込めませんでした。</div><div id="birdGrid" class="grid"></div><div id="empty" hidden>条件に合う鳩が見つかりません。</div></section>
 <section id="contact" class="contact"><div class="wrap"><h2>お問い合わせ</h2><p>個体についてのお問い合わせの際は、脚環番号をお知らせください。</p><p><b>合同会社優乃翼</b><br>〒879-6331 大分県豊後大野市朝地町鳥田1321-1</p></div></section></main>
 <dialog id="detailModal"><button id="modalClose">×</button><div id="modalContent"></div></dialog>
-<script>window.YUNOTSUBASA_CONFIG={sheetId:"1rnzdgz7Md0ZoL_y2O_mQ8eXayTODU6AKmOzeA9TV1kM",sheetName:"鳩データベース"};</script><script src="script.js"></script></body></html>
+<script>window.YUNOTSUBASA_CONFIG={sheetId:"1rnzdgz7Md0ZoL_y2O_mQ8eXayTODU6AKmOzeA9TV1kM",sheetName:"鳩データベース"};</script><script src="script.js"></script>
+<script>
+const menuToggle=document.getElementById('menuToggle');
+const mobileMenu=document.getElementById('mobileMenu');
+if(menuToggle&&mobileMenu){
+  menuToggle.addEventListener('click',()=>{
+    const open=mobileMenu.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded',String(open));
+    menuToggle.textContent=open?'×':'☰';
+  });
+  mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+    mobileMenu.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded','false');
+    menuToggle.textContent='☰';
+  }));
+}
+</script>
+</body></html>
