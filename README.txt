@@ -1,13 +1,16 @@
-優乃翼 ヘッダー改善版
+優乃翼 Apps Script接続版
 
-GitHubに以下2ファイルを上書きしてください。
+GitHubへ以下2ファイルを上書きしてください。
 - index.html
-- styles.css
+- admin.html
 
-変更点:
-- PC: 「管理者ログイン」「お問い合わせ」を押しやすいボタン化
-- スマホ: 右上にハンバーガーメニュー
-- メニュー内に「鳩を検索」「お問い合わせ」「管理者ログイン」
-- 管理者リンクを見つけやすくしつつ、お客様向け導線と分離
+変更内容:
+・公開サイトの「管理者ログイン」からGoogle Apps Script管理画面へ直接移動
+・旧 admin.html を開いてもApps Script管理画面へ自動転送
+・GitHub PagesとApps Script間のCORS問題を回避
 
-admin.html / admin.css / admin.js は変更不要です。
+管理画面URL:
+https://script.google.com/macros/s/AKfycbzx-FsaOwM6Unp-Dvk_6RCjNb0-atQ3xFfZvSaS1sEQklsObDhSYLdFjOwxSnPCPkk7/exec
+
+注意:
+管理者認証はApps Script側で行います。

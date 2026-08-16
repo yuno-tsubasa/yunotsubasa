@@ -1,1 +1,21 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>優乃翼｜管理者</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="admin.css"></head><body><header><div class="wrap head"><a href="index.html"><b>優乃翼</b><small>管理者モード</small></a><nav><a href="index.html">公開サイトへ</a></nav></div></header><main class="wrap admin"><h1>鳩データベース管理</h1><div class="notice">管理画面のガワまで完成しています。Google Apps Script接続後に保存・画像アップロードが有効になります。</div><div class="tabs"><button data-t="list" class="on">登録鳩一覧</button><button data-t="form">＋ 新規登録</button></div><section id="list"><input id="adminSearch" placeholder="脚環番号・個体名で検索"><div id="adminBirdList"></div></section><section id="form" hidden><form id="birdForm"><h2>鳩を登録・編集</h2><div class="fg"><label><span>脚環番号</span><input name="脚環番号" type="text"></label><label><span>個体名</span><input name="個体名" type="text"></label><label><span>性別</span><select name="性別"><option></option><option>♂</option><option>♀</option><option>不明</option></select></label><label><span>羽色</span><input name="羽色" type="text"></label><label><span>作出年</span><input name="作出年" type="text"></label><label><span>作出者</span><input name="作出者" type="text"></label><label><span>父</span><input name="父" type="text"></label><label><span>母</span><input name="母" type="text"></label><label><span>父方祖父</span><input name="父方祖父" type="text"></label><label><span>父方祖母</span><input name="父方祖母" type="text"></label><label><span>母方祖父</span><input name="母方祖父" type="text"></label><label><span>母方祖母</span><input name="母方祖母" type="text"></label><label><span>競翔成績</span><textarea name="競翔成績" rows="3"></textarea></label><label><span>血統・特徴</span><textarea name="血統・特徴" rows="3"></textarea></label><label><span>価格</span><input name="価格" type="text"></label><label><span>状態</span><select name="状態"><option>販売中</option><option>商談中</option><option>売約済</option><option>非売品</option></select></label><label><span>鳩画像URL</span><input name="鳩画像URL" type="url"></label><label><span>血統書画像URL</span><input name="血統書画像URL" type="url"></label><label><span>備考</span><textarea name="備考" rows="3"></textarea></label><label><span>鳩写真アップロード</span><input id="birdImage" type="file" accept="image/*"></label><label><span>血統書アップロード</span><input id="pedigreeImage" type="file" accept="image/*"></label></div><p id="saveMessage"></p><button class="save" type="submit">保存する</button></form></section></main><script>window.YUNOTSUBASA_ADMIN_CONFIG={sheetId:"1rnzdgz7Md0ZoL_y2O_mQ8eXayTODU6AKmOzeA9TV1kM",sheetName:"鳩データベース",appsScriptUrl:""};</script><script src="admin.js"></script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycbzx-FsaOwM6Unp-Dvk_6RCjNb0-atQ3xFfZvSaS1sEQklsObDhSYLdFjOwxSnPCPkk7/exec">
+<title>優乃翼｜管理者ログイン</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;margin:0;background:#f4f6f8;color:#17202a}
+.box{max-width:640px;margin:80px auto;padding:30px;background:#fff;border:1px solid #dce2e8;border-radius:16px;text-align:center}
+a{display:inline-block;margin-top:15px;padding:12px 20px;border-radius:999px;background:#17324d;color:#fff;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>管理者画面へ移動します</h1>
+<p>自動で移動しない場合は、下のボタンを押してください。</p>
+<a href="https://script.google.com/macros/s/AKfycbzx-FsaOwM6Unp-Dvk_6RCjNb0-atQ3xFfZvSaS1sEQklsObDhSYLdFjOwxSnPCPkk7/exec">管理者画面を開く</a>
+</div>
+</body>
+</html>
