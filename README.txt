@@ -1,16 +1,11 @@
-優乃翼 Apps Script接続版
+優乃翼 管理者リンク 最新版
 
-GitHubへ以下2ファイルを上書きしてください。
-- index.html
-- admin.html
+GitHubへ次の2ファイルを上書きしてください。
 
-変更内容:
-・公開サイトの「管理者ログイン」からGoogle Apps Script管理画面へ直接移動
-・旧 admin.html を開いてもApps Script管理画面へ自動転送
-・GitHub PagesとApps Script間のCORS問題を回避
+1. index.html
+2. admin.html
 
-管理画面URL:
-https://script.google.com/macros/s/AKfycbzx-FsaOwM6Unp-Dvk_6RCjNb0-atQ3xFfZvSaS1sEQklsObDhSYLdFjOwxSnPCPkk7/exec
+管理者ログインの接続先:
+https://script.google.com/macros/s/AKfycbzGuO-Qzv5GltEU5605ZnBFEWQBtsTLDz6b637_Lo2hnpvKDGsC4q5-YCIaU-kyHufi/exec
 
-注意:
-管理者認証はApps Script側で行います。
+styles.css / script.js / admin.css / admin.js は今回は変更不要です。
