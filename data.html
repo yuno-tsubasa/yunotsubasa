@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>優乃翼｜データ確認</title>
+<link rel="stylesheet" href="data.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="brand-main">優乃翼</div>
+    <div class="brand-sub">レース鳩データ確認</div>
+  </div>
+  <button id="settingsButton" class="ghost" type="button">接続設定</button>
+</header>
+
+<main>
+  <section id="setupPanel" class="panel setup">
+    <h1>スプレッドシートを接続</h1>
+    <p>初回だけ、接続するGoogleスプレッドシートのURLを入力してください。この端末に180日間保存します。</p>
+
+    <label class="field">
+      <span>GoogleスプレッドシートURL</span>
+      <input id="sheetUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://docs.google.com/spreadsheets/d/...">
+    </label>
+
+    <label class="field">
+      <span>シート名</span>
+      <input id="sheetName" type="text" value="鳩データベース" autocomplete="off">
+    </label>
+
+    <button id="connectButton" class="primary" type="button">接続する</button>
+    <div id="setupMessage" class="message"></div>
+    <p class="note">※ ブラウザのサイトデータを削除した場合は再入力が必要です。</p>
+  </section>
+
+  <section id="dataPanel" hidden>
+    <section class="panel summary">
+      <div>
+        <div class="eyebrow">接続中</div>
+        <div id="connectedSheet" class="connected-sheet"></div>
+      </div>
+      <button id="reloadButton" class="secondary" type="button">再読込</button>
+    </section>
+
+    <section class="panel">
+      <label class="field">
+        <span>登録鳩を検索</span>
+        <input id="keyword" type="search" placeholder="脚環番号・個体名・血統など">
+      </label>
+
+      <div class="filters">
+        <select id="sexFilter">
+          <option value="">性別：すべて</option>
+          <option>♂</option>
+          <option>♀</option>
+          <option>不明</option>
+        </select>
+
+        <select id="statusFilter">
+          <option value="">状態：すべて</option>
+          <option>販売中</option>
+          <option>商談中</option>
+          <option>売約済</option>
+          <option>非売品</option>
+        </select>
+      </div>
+
+      <div class="result-row">
+        <span id="resultCount">0件</span>
+        <button id="clearButton" class="text-button" type="button">条件をクリア</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div id="loading" class="empty">読み込み中…</div>
+      <div id="error" class="error-box" hidden></div>
+      <div id="birdList"></div>
+      <div id="empty" class="empty" hidden>条件に合う鳩がありません。</div>
+    </section>
+  </section>
+</main>
+
+<dialog id="detailModal">
+  <button id="closeModal" class="modal-close" type="button">×</button>
+  <div id="detailContent"></div>
+</dialog>
+
+<script src="data.js"></script>
+</body>
+</html>
