@@ -12,7 +12,7 @@ function parseCSV(t){let rs=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let
 function driveThumb(u){const t=String(u||""),m=t.match(/\/d\/([A-Za-z0-9_-]+)/)||t.match(/[?&]id=([A-Za-z0-9_-]+)/);return m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`:t}
 
 async function load(){conn=getConn();if(!conn)return showSetup();$("#loading").hidden=false;$("#error").hidden=true;try{const r=await fetch(csvURL(),{cache:"no-store"});if(!r.ok)throw 0;const rows=parseCSV(await r.text());headers=rows.shift()||[];birds=rows.filter(x=>x.some(v=>String(v||"").trim()!=="")).map((x,i)=>Object.assign({_row:i+2},Object.fromEntries(headers.map((h,j)=>[h,x[j]||""])));$("#loading").hidden=true;render()}catch{$("#loading").hidden=true;$("#error").hidden=false;$("#error").textContent="読み込みに失敗しました。スプレッドシートの共有設定を確認してください。"}}
-function render(){const q=$("#keyword").value.trim().toLowerCase(),sex=$("#sexFilter").value,status=$("#statusFilter").value;a=birds.filter(b=>(!q||Object.values(b).join(" ").toLowerCase().includes(q))&&(!sex||b["性別"]===sex)&&(!status||b["状態"]===status));$("#resultCount").textContent=`${a.length}件`;$("#birdList").innerHTML=a.map(b=>`<article class="bird"><div class="ring">${esc(b["脚環番号"])}</div><div class="name">${esc(b["個体名"])}</div><div class="meta">${esc([b["性別"],b["羽色"],b["作出年"],b["状態"]].filter(Boolean).join(" ／ "))}</div>${(b["鳩画像URL"]||b["目画像URL"])?`<div class="thumbs">${b["鳩画像URL"]?`<img class="thumb" src="${esc(driveThumb(b["鳩画像URL"]))}">`:"<div></div>"}${b["目画像URL"]?`<img class="thumb" src="${esc(driveThumb(b["目画像URL"]))}">`:"<div></div>"}</div>`:""}<button class="edit-button" data-row="${b._row}">編集する</button></article>`).join("");$("#empty").hidden=a.length!==0;document.querySelectorAll(".edit-button").forEach(x=>x.onclick=()=>openEdit(Number(x.dataset.row)))}
+function render(){const q=$("#keyword").value.trim().toLowerCase(),sex=$("#sexFilter").value,status=$("#statusFilter").value;const a=birds.filter(b=>(!q||Object.values(b).join(" ").toLowerCase().includes(q))&&(!sex||b["性別"]===sex)&&(!status||b["状態"]===status));$("#resultCount").textContent=`${a.length}件`;$("#birdList").innerHTML=a.map(b=>`<article class="bird"><div class="ring">${esc(b["脚環番号"])}</div><div class="name">${esc(b["個体名"])}</div><div class="meta">${esc([b["性別"],b["羽色"],b["作出年"],b["状態"]].filter(Boolean).join(" ／ "))}</div>${(b["鳩画像URL"]||b["目画像URL"])?`<div class="thumbs">${b["鳩画像URL"]?`<img class="thumb" src="${esc(driveThumb(b["鳩画像URL"]))}">`:"<div></div>"}${b["目画像URL"]?`<img class="thumb" src="${esc(driveThumb(b["目画像URL"]))}">`:"<div></div>"}</div>`:""}<button class="edit-button" data-row="${b._row}">編集する</button></article>`).join("");$("#empty").hidden=a.length!==0;document.querySelectorAll(".edit-button").forEach(x=>x.onclick=()=>openEdit(Number(x.dataset.row)))}
 function field(n,v=""){if(["鳩画像URL","目画像URL","血統書画像URL"].includes(n))return "";const ta=["競翔成績","血統・特徴","備考"].includes(n),wide=ta?"wide":"";if(n==="性別")return `<label class="field"><span>${n}</span><select name="${n}"><option value="">未選択</option>${["♂","♀","不明"].map(x=>`<option ${x===v?"selected":""}>${x}</option>`).join("")}</select></label>`;if(n==="状態")return `<label class="field"><span>${n}</span><select name="${n}">${["販売中","商談中","売約済","非売品"].map(x=>`<option ${x===v?"selected":""}>${x}</option>`).join("")}</select></label>`;return `<label class="field ${wide}"><span>${n}</span>${ta?`<textarea name="${n}">${esc(v)}</textarea>`:`<input name="${n}" value="${esc(v)}">`}</label>`}
 function setPreview(id,u){const i=$(id);if(u){i.src=driveThumb(u);i.classList.add("show")}else{i.removeAttribute("src");i.classList.remove("show")}}
 function localPreview(fi,pi){$(fi).onchange=()=>{const f=$(fi).files[0];if(!f)return;const u=URL.createObjectURL(f);$(pi).src=u;$(pi).classList.add("show")}}
@@ -28,8 +28,41 @@ async function deleteRow(row){const meta=await fetch(`https://sheets.googleapis.
 function showSetup(){$("#setupPanel").hidden=false;$("#dataPanel").hidden=true;const c=getConn();if(c){$("#sheetUrl").value=`https://docs.google.com/spreadsheets/d/${c.sheetId}/edit`;$("#sheetName").value=c.sheetName}}
 function showData(){$("#setupPanel").hidden=true;$("#dataPanel").hidden=false}
 
-$("#connectButton").onclick=()=>{const id=idFrom($("#sheetUrl").value);if(!id){$("#setupMessage").textContent="URLを確認してください。";return}conn=saveConn(id,$("#sheetName").value.trim());showData();load()};
-$("#settingsButton").onclick=showSetup;$("#googleLoginButton").onclick=auth;$("#searchButton").onclick=render;$("#keyword").oninput=render;$("#sexFilter").oninput=render;$("#statusFilter").oninput=render;
+$("#connectButton").onclick=async()=>{
+  const button=$("#connectButton");
+  const msg=$("#setupMessage");
+  const id=idFrom($("#sheetUrl").value);
+  if(!id){
+    msg.textContent="GoogleスプレッドシートのURLを確認してください。";
+    msg.className="message error";
+    return;
+  }
+  try{
+    button.disabled=true;
+    button.textContent="接続しています…";
+    msg.textContent="";
+    conn=saveConn(id,$("#sheetName").value.trim());
+    showData();
+    await load();
+  }catch(err){
+    console.error(err);
+    showSetup();
+    msg.textContent="接続に失敗しました。URLと共有設定を確認してください。";
+    msg.className="message error";
+  }finally{
+    button.disabled=false;
+    button.textContent="接続する";
+  }
+};
+$("#settingsButton").onclick=showSetup;
+["#sheetUrl","#sheetName"].forEach(sel=>{
+  $(sel).addEventListener("keydown",ev=>{
+    if(ev.key==="Enter"){
+      ev.preventDefault();
+      $("#connectButton").click();
+    }
+  });
+});$("#googleLoginButton").onclick=auth;$("#searchButton").onclick=render;$("#keyword").oninput=render;$("#sexFilter").oninput=render;$("#statusFilter").oninput=render;
 $("#clearButton").onclick=()=>{$("#keyword").value="";$("#sexFilter").value="";$("#statusFilter").value="";render()};
 $("#newButton").onclick=()=>openEdit();$("#closeEdit").onclick=()=>$("#editModal").close();
 localPreview("#bodyImageFile","#bodyPreview");localPreview("#eyeImageFile","#eyePreview");localPreview("#pedigreeImageFile","#pedigreePreview");
