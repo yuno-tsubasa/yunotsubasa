@@ -1,11 +1,23 @@
-優乃翼 管理者リンク 最新版
+今回の更新ファイル
 
-GitHubへ次の2ファイルを上書きしてください。
+【管理ページ】
+data.html
+data.css
+data.js
 
-1. index.html
-2. admin.html
+変更:
+・鳩本体写真 長辺最大1,800px / JPEG品質86%
+・目の写真 長辺最大1,800px / JPEG品質86%
+・血統書 長辺最大3,000px / JPEG品質92%
 
-管理者ログインの接続先:
-https://script.google.com/macros/s/AKfycbzGuO-Qzv5GltEU5605ZnBFEWQBtsTLDz6b637_Lo2hnpvKDGsC4q5-YCIaU-kyHufi/exec
+【一般公開ページ】
+index.html
+styles.css
+script.js
 
-styles.css / script.js / admin.css / admin.js は今回は変更不要です。
+変更:
+・「検索文字を入力」表示
+・鳩本体写真を詳細画面に表示
+・目の写真を詳細画面に表示
+・血統書画像を表示
+・各画像をタップ/クリックで大きく拡大表示
