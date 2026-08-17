@@ -4,14 +4,75 @@ let birds=[],conn=null,token="",headers=[];
 const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const BASE_FIELDS=["脚環番号","個体名","性別","羽色","作出年","作出者","父","母","父方祖父","父方祖母","母方祖父","母方祖母","競翔成績","血統・特徴","価格","状態","鳩画像URL","目画像URL","血統書画像URL","備考"];
 
-function idFrom(v){const m=String(v||"").match(/\/spreadsheets\/d\/([A-Za-z0-9_-]+)/);return m?m[1]:""}
+function idFrom(v){
+  const text=String(v||"").trim();
+  const m=text.match(/\/spreadsheets\/d\/([A-Za-z0-9_-]+)/);
+  if(m) return m[1];
+  if(/^[A-Za-z0-9_-]{20,}$/.test(text)) return text;
+  return "";
+}
 function getConn(){try{const x=JSON.parse(localStorage.getItem(STORE)||"null");if(!x||Date.now()>x.expiresAt){localStorage.removeItem(STORE);return null}return x}catch{return null}}
 function saveConn(id,name){const x={sheetId:id,sheetName:name||"鳩データベース",expiresAt:Date.now()+TTL};localStorage.setItem(STORE,JSON.stringify(x));return x}
-function csvURL(){return `https://docs.google.com/spreadsheets/d/${conn.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(conn.sheetName)}&_=${Date.now()}`}
-function parseCSV(t){let rs=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let ch=t[i],n=t[i+1];if(ch=='"'){if(q&&n=='"'){c+='"';i++}else q=!q}else if(ch==","&&!q){r.push(c);c=""}else if((ch=="\n"||ch=="\r")&&!q){if(ch=="\r"&&n=="\n")i++;r.push(c);rs.push(r);r=[];c=""}else c+=ch}if(c||r.length){r.push(c);rs.push(r)}return rs}
+function gvizURL(){
+  return `https://docs.google.com/spreadsheets/d/${conn.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(conn.sheetName)}&_=${Date.now()}`;
+}
+
+function parseGViz(text){
+  const start=text.indexOf('{');
+  const end=text.lastIndexOf('}');
+  if(start<0||end<0) throw new Error('Google Sheets response parse error');
+
+  const json=JSON.parse(text.slice(start,end+1));
+  headers=(json.table.cols||[]).map(c=>c.label||'');
+
+  return (json.table.rows||[]).map((row,index)=>{
+    const obj={_row:index+2};
+    headers.forEach((h,i)=>{
+      const cell=row.c&&row.c[i] ? row.c[i] : null;
+      obj[h]=cell ? (cell.f ?? cell.v ?? '') : '';
+    });
+    return obj;
+  });
+}
+
 function driveThumb(u){const t=String(u||""),m=t.match(/\/d\/([A-Za-z0-9_-]+)/)||t.match(/[?&]id=([A-Za-z0-9_-]+)/);return m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`:t}
 
-async function load(){conn=getConn();if(!conn)return showSetup();$("#loading").hidden=false;$("#error").hidden=true;try{const r=await fetch(csvURL(),{cache:"no-store"});if(!r.ok)throw 0;const rows=parseCSV(await r.text());headers=rows.shift()||[];birds=rows.filter(x=>x.some(v=>String(v||"").trim()!=="")).map((x,i)=>Object.assign({_row:i+2},Object.fromEntries(headers.map((h,j)=>[h,x[j]||""])));$("#loading").hidden=true;render()}catch{$("#loading").hidden=true;$("#error").hidden=false;$("#error").textContent="読み込みに失敗しました。スプレッドシートの共有設定を確認してください。"}}
+async function load(){
+  conn=getConn();
+  if(!conn) return showSetup();
+
+  $("#loading").hidden=false;
+  $("#error").hidden=true;
+
+  try{
+    const r=await fetch(gvizURL(),{
+      method:"GET",
+      cache:"no-store",
+      credentials:"omit"
+    });
+
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+
+    const text=await r.text();
+    birds=parseGViz(text).filter(b=>
+      b["脚環番号"] ||
+      b["個体名"] ||
+      Object.values(b).some(v=>String(v||"").trim()!=="")
+    );
+
+    $("#loading").hidden=true;
+    render();
+
+  }catch(err){
+    console.error("Spreadsheet load failed:",err);
+    $("#loading").hidden=true;
+    $("#error").hidden=false;
+    $("#error").textContent=
+      "スプレッドシートを読み込めませんでした。URL、シート名「"+conn.sheetName+"」、共有設定を確認してください。";
+    throw err;
+  }
+}
+
 function render(){const q=$("#keyword").value.trim().toLowerCase(),sex=$("#sexFilter").value,status=$("#statusFilter").value;const a=birds.filter(b=>(!q||Object.values(b).join(" ").toLowerCase().includes(q))&&(!sex||b["性別"]===sex)&&(!status||b["状態"]===status));$("#resultCount").textContent=`${a.length}件`;$("#birdList").innerHTML=a.map(b=>`<article class="bird"><div class="ring">${esc(b["脚環番号"])}</div><div class="name">${esc(b["個体名"])}</div><div class="meta">${esc([b["性別"],b["羽色"],b["作出年"],b["状態"]].filter(Boolean).join(" ／ "))}</div>${(b["鳩画像URL"]||b["目画像URL"])?`<div class="thumbs">${b["鳩画像URL"]?`<img class="thumb" src="${esc(driveThumb(b["鳩画像URL"]))}">`:"<div></div>"}${b["目画像URL"]?`<img class="thumb" src="${esc(driveThumb(b["目画像URL"]))}">`:"<div></div>"}</div>`:""}<button class="edit-button" data-row="${b._row}">編集する</button></article>`).join("");$("#empty").hidden=a.length!==0;document.querySelectorAll(".edit-button").forEach(x=>x.onclick=()=>openEdit(Number(x.dataset.row)))}
 function field(n,v=""){if(["鳩画像URL","目画像URL","血統書画像URL"].includes(n))return "";const ta=["競翔成績","血統・特徴","備考"].includes(n),wide=ta?"wide":"";if(n==="性別")return `<label class="field"><span>${n}</span><select name="${n}"><option value="">未選択</option>${["♂","♀","不明"].map(x=>`<option ${x===v?"selected":""}>${x}</option>`).join("")}</select></label>`;if(n==="状態")return `<label class="field"><span>${n}</span><select name="${n}">${["販売中","商談中","売約済","非売品"].map(x=>`<option ${x===v?"selected":""}>${x}</option>`).join("")}</select></label>`;return `<label class="field ${wide}"><span>${n}</span>${ta?`<textarea name="${n}">${esc(v)}</textarea>`:`<input name="${n}" value="${esc(v)}">`}</label>`}
 function setPreview(id,u){const i=$(id);if(u){i.src=driveThumb(u);i.classList.add("show")}else{i.removeAttribute("src");i.classList.remove("show")}}
