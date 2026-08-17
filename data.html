@@ -9,13 +9,9 @@
 </head>
 <body>
 <header class="top">
-  <div>
-    <div class="brand-main">優乃翼</div>
-    <div class="brand-sub">レース鳩データ管理</div>
-  </div>
+  <div><div class="brand-main">優乃翼</div><div class="brand-sub">レース鳩データ管理</div></div>
   <button id="settingsButton" class="ghost" type="button">接続設定</button>
 </header>
-
 <main>
   <section id="setupPanel" class="panel setup">
     <h1>スプレッドシートを接続</h1>
@@ -28,22 +24,38 @@
 
   <section id="dataPanel" hidden>
     <section class="panel authbar">
-      <div>
-        <div class="eyebrow">編集権限</div>
-        <div id="authStatus">閲覧のみ</div>
-      </div>
+      <div><div class="eyebrow">編集権限</div><div id="authStatus">閲覧のみ</div></div>
       <button id="googleLoginButton" class="secondary" type="button">Googleで編集を有効化</button>
     </section>
 
     <section class="panel">
-      <label class="field"><span>登録鳩を検索</span><input id="keyword" type="search" placeholder="脚環番号・個体名・血統など"></label>
-      <div class="result-row"><span id="resultCount">0件</span><button id="newButton" class="secondary" type="button">＋ 新規登録</button></div>
+      <label class="field">
+        <span>検索文字を入力</span>
+        <div class="search-row">
+          <input id="keyword" type="search" placeholder="脚環番号・個体名・血統など">
+          <button id="searchButton" class="search-button" type="button">検索する</button>
+        </div>
+      </label>
+
+      <div class="filters">
+        <select id="sexFilter"><option value="">性別：すべて</option><option>♂</option><option>♀</option><option>不明</option></select>
+        <select id="statusFilter"><option value="">状態：すべて</option><option>販売中</option><option>商談中</option><option>売約済</option><option>非売品</option></select>
+      </div>
+
+      <div class="result-row">
+        <span id="resultCount">0件</span>
+        <div class="result-actions">
+          <button id="clearButton" class="text-button" type="button">条件をクリア</button>
+          <button id="newButton" class="secondary" type="button">＋ 新規登録</button>
+        </div>
+      </div>
     </section>
 
     <section class="panel">
       <div id="loading" class="empty">読み込み中…</div>
       <div id="error" class="error-box" hidden></div>
       <div id="birdList"></div>
+      <div id="empty" class="empty" hidden>条件に合う鳩がありません。</div>
     </section>
   </section>
 </main>
@@ -53,7 +65,30 @@
   <h2 id="editTitle">編集</h2>
   <form id="editForm">
     <div id="editFields"></div>
-    <button id="saveButton" class="primary" type="submit">保存する</button>
+
+    <section class="image-section">
+      <h3>写真</h3>
+
+      <div class="image-block">
+        <div class="image-title">鳩本体写真</div>
+        <img id="bodyPreview" class="preview" alt="鳩本体写真">
+        <input id="bodyImageFile" type="file" accept="image/*">
+      </div>
+
+      <div class="image-block">
+        <div class="image-title">目の写真</div>
+        <img id="eyePreview" class="preview" alt="目の写真">
+        <input id="eyeImageFile" type="file" accept="image/*">
+      </div>
+
+      <div class="image-block">
+        <div class="image-title">血統書画像</div>
+        <img id="pedigreePreview" class="preview" alt="血統書画像">
+        <input id="pedigreeImageFile" type="file" accept="image/*">
+      </div>
+    </section>
+
+    <button id="saveButton" class="primary save-fixed" type="submit">保存する</button>
     <button id="deleteButton" class="danger" type="button">削除する</button>
     <div id="editMessage" class="message"></div>
   </form>
@@ -61,7 +96,9 @@
 
 <script>
 window.YUNOTSUBASA_EDIT_CONFIG={
-  clientId:"401865928131-7ff2k3iuohhj7nct2gebsludhmm24llu.apps.googleusercontent.com"
+  clientId:"401865928131-7ff2k3iuohhj7nct2gebsludhmm24llu.apps.googleusercontent.com",
+  birdImageFolderId:"1NXh2uTRwFaFRu92neT8tb5ov_XL-JWbt",
+  pedigreeFolderId:"1Bc6ZVRxBR272V3n2ZbyBE5raP-En6OyR"
 };
 </script>
 <script src="data.js"></script>
